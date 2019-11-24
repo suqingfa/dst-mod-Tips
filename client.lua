@@ -1,19 +1,18 @@
 
 local TipsBadge = require "widgets/tipsbadge"
 
-local init = false
+local _controls = nil
+
 AddClassPostConstruct("widgets/controls", function(controls)
+    _controls = controls
     for _,v in ipairs(_G.autotipslist) do
         controls[v] = controls.containerroot:AddChild(TipsBadge(v))
         controls[v]:Hide()
     end
+end)
 
-    if init then
-        return
-    end
-    init = true
-
-    _G.TheWorld:DoPeriodicTask(1, function()
+AddGamePostInit(function ()
+        _G.TheWorld:DoPeriodicTask(1, function()
         local width, height = _G.TheSim:GetScreenSize()
         local x = - width / 2 + 260
         local y = height / 2 - 40
@@ -26,15 +25,14 @@ AddClassPostConstruct("widgets/controls", function(controls)
             local time = _G.ThePlayer.components.tips["net_" .. v]:value()
             if time > 0 then
                 y = y - 30
-                controls[v]:SetPosition(x, y)
-                controls[v]:Show()
-                controls[v].num:SetString(_G.timetostring(time))
+                _controls[v]:SetPosition(x, y)
+                _controls[v]:Show()
+                _controls[v].num:SetString(_G.timetostring(time))
             else
-                controls[v]:Hide()
+                _controls[v]:Hide()
             end
         end
     end)
-
 
     local desc = ""
     for k,v in pairs(_G.tips_index) do
