@@ -11,8 +11,8 @@ AddClassPostConstruct("widgets/controls", function(controls)
     end
 end)
 
-AddGamePostInit(function ()
-        _G.TheWorld:DoPeriodicTask(1, function()
+AddPrefabPostInit("world", function (inst)
+        inst:DoPeriodicTask(1, function()
         local width, height = _G.TheSim:GetScreenSize()
         local x = - width / 2 + 260
         local y = height / 2 - 40
