@@ -7,7 +7,7 @@ command:
 ]]
 
 author = "suqf"
-version = "1.1.5"
+version = "1.2.1"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"
@@ -26,6 +26,17 @@ all_clients_require_mod = true
 
 configuration_options =
 {
+    {
+        name = "tips_method",
+        label = "tips method",
+        options = {
+            {description = "UI", data = 1},
+            {description = "talk", data = 2},
+            {description = "system message", data = 3},
+        },
+        default = 1,
+    },
+
     {
         name = "tick_rate",
         label = "tick rate",

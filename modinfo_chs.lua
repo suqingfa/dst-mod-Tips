@@ -7,7 +7,7 @@ description = [[
 ]]
 
 author = "suqf"
-version = "1.1.5"
+version = "1.2.1"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"
@@ -26,6 +26,17 @@ all_clients_require_mod = true
 
 configuration_options =
 {
+    {
+        name = "tips_method",
+        label = "提示方式",
+        options = {
+            {description = "UI", data = 1},
+            {description = "说话", data = 2},
+            {description = "系统消息", data = 3},
+        },
+        default = 1,
+    },
+
     {
         name = "tick_rate",
         label = "通信时间间隔",

@@ -1,8 +1,9 @@
 
 local TipsBadge = require "widgets/tipsbadge"
 
-local _controls = nil
+local tips_method = GetModConfigData("tips_method")
 
+local _controls = nil
 AddClassPostConstruct("widgets/controls", function(controls)
     _controls = controls
     for _,v in ipairs(_G.autotipslist) do
@@ -11,18 +12,19 @@ AddClassPostConstruct("widgets/controls", function(controls)
     end
 end)
 
-AddPrefabPostInit("world", function (inst)
-        inst:DoPeriodicTask(1, function()
+local function tipsui(inst)
+    inst:DoPeriodicTask(1, function()
         local width, height = _G.TheSim:GetScreenSize()
         local x = - width / 2 + 260
         local y = height / 2 - 40
+        local player = _G.ThePlayer
 
-        if _G.ThePlayer == nil or _G.ThePlayer.components.tips == nil then
+        if player == nil or player.components.tips == nil then
             return
         end
 
         for _,v in ipairs(_G.autotipslist) do
-            local time = _G.ThePlayer.components.tips["net_" .. v]:value()
+            local time = player.components.tips["net_" .. v]:value()
             if time > 0 then
                 y = y - 30
                 _controls[v]:SetPosition(x, y)
@@ -33,6 +35,42 @@ AddPrefabPostInit("world", function (inst)
             end
         end
     end)
+end
+
+local function tipstext(inst)
+    inst:WatchWorldState("cycles", function()
+        local player = _G.ThePlayer
+        if player == nil or _G.ThePlayer.components.tips == nil then
+            return
+        end
+
+        local str = ""
+
+        for _,v in ipairs(_G.autotipslist) do
+            local time = player.components.tips["net_" .. v]:value()
+            if time > 0 then
+                str = str .. v .. " " .. _G.timetostring(time) .. "\n"
+            end
+        end
+
+        if #str == 0 then
+            return
+        end
+
+        if tips_method == 2 and player.components.talker then
+            player.components.talker:Say(str)
+        elseif tips_method == 3 and player.HUD and player.HUD.controls and player.HUD.controls.networkchatqueue then
+            player.HUD.controls.networkchatqueue:DisplaySystemMessage(str)
+        end
+    end)
+end
+
+AddPrefabPostInit("world", function (inst)
+    if tips_method == 1 then
+        tipsui(inst)
+    else
+        tipstext(inst)
+    end
 
     local desc = ""
     for k,v in pairs(_G.tips_index) do
