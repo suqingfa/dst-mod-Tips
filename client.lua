@@ -21,8 +21,8 @@ local function tipsui(inst)
         local screenw_full, screenh_full = _G.TheSim:GetScreenSize()
         local width = screenw_full / hudscale.x
         local height = screenh_full / hudscale.y
-        local x = - width / 2 + 260
-        local y = height / 2 - 40
+        local x = - width / 2 + 100
+        local y = height / 2 - 0
         local player = _G.ThePlayer
 
         if player == nil or player.components.tips == nil then
