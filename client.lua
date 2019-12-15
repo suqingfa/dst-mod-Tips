@@ -14,7 +14,13 @@ end)
 
 local function tipsui(inst)
     inst:DoPeriodicTask(1, function()
-        local width, height = _G.TheSim:GetScreenSize()
+        if _controls == nil or _controls.top_root == nil then 
+            return 
+        end
+        local hudscale = _controls.top_root:GetScale()
+        local screenw_full, screenh_full = _G.TheSim:GetScreenSize()
+        local width = screenw_full / hudscale.x
+        local height = screenh_full / hudscale.y
         local x = - width / 2 + 260
         local y = height / 2 - 40
         local player = _G.ThePlayer
