@@ -1,11 +1,42 @@
+TheSim = _G.TheSim
+tonumber = _G.tonumber
+json = _G.json
+
 
 local TipsBadge = require "widgets/tipsbadge"
 
 local tips_method = GetModConfigData("tips_method")
 
 local _controls = nil
+local _position = nil
+
+local filename = "mod_config_data/tips"
+
+local function LoadPosition()
+    TheSim:GetPersistentString(filename, function(load_success, str)
+        if load_success and #str > 0 then
+            local position = json.decode(str)
+            if position ~= nil and type(position) == "table" then
+                _position = position
+                return
+            end
+        end
+
+        local hudscale = _controls.top_root:GetScale()
+        local screenw_full, screenh_full = TheSim:GetScreenSize()
+        local width = screenw_full / hudscale.x
+        local height = screenh_full / hudscale.y
+        _position = {x = -width / 2 + 100, y = height / 2 }
+    end)
+end
+
+local function SavePosition()
+    TheSim:SetPersistentString(filename, json.encode(_position), false)
+end
+
 AddClassPostConstruct("widgets/controls", function(controls)
     _controls = controls
+    LoadPosition()
     for _,v in ipairs(_G.autotipslist) do
         controls[v] = controls.containerroot:AddChild(TipsBadge(v))
         controls[v]:Hide()
@@ -13,22 +44,15 @@ AddClassPostConstruct("widgets/controls", function(controls)
 end)
 
 local function tipsui(inst)
-    inst:DoPeriodicTask(1, function()
-        if _controls == nil or _controls.top_root == nil then 
-            return 
-        end
-        local hudscale = _controls.top_root:GetScale()
-        local screenw_full, screenh_full = _G.TheSim:GetScreenSize()
-        local width = screenw_full / hudscale.x
-        local height = screenh_full / hudscale.y
-        local x = - width / 2 + 100
-        local y = height / 2 - 0
+    inst:DoPeriodicTask(1, function()        
         local player = _G.ThePlayer
 
         if player == nil or player.components.tips == nil then
             return
         end
 
+        local x = _position.x
+        local y = _position.y
         for _,v in ipairs(_G.autotipslist) do
             local time = player.components.tips["net_" .. v]:value()
             if time > 0 then
@@ -78,7 +102,7 @@ AddPrefabPostInit("world", function (inst)
         tipstext(inst)
     end
 
-    local desc = ""
+    local desc = "sx sy"
     for k,v in pairs(_G.tips_index) do
         if #k == 2 then
             desc = desc .. " " .. k
@@ -92,12 +116,26 @@ AddPrefabPostInit("world", function (inst)
         slash = true,
         usermenu = false,
         servermenu = false,
-        params = {"what"},
-        paramsoptional = {false},
+        params = {"what", "num"},
+        paramsoptional = {false, true},
         vote = false,
         localfn = function(params, caller)
+            local what = params.what
+
+            if what == "sx" or what == "sy" then
+                local n = tonumber(params.num)
+                if n == nil then
+                    return
+                end
+
+                _position.x = what == "sx" and n or _position.x
+                _position.y = what == "sy" and n or _position.y
+                SavePosition()
+                return
+            end
+
             if caller.components.tips then
-                caller.components.tips:GetTime(params.what)
+                caller.components.tips:GetTime(what)
             end
         end
     })

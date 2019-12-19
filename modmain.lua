@@ -23,7 +23,7 @@ _G.timetostring = function (time)
     time = time - minute * 60
     local second = math.floor(time)
 
-    return string.format("%d:%02d:%02d", day, minute, second)
+    return string.format("%02d:%02d:%02d", day, minute, second)
 end
 
 local function findentity(prefabname)
