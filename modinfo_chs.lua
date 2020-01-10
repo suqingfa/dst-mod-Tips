@@ -7,7 +7,7 @@ description = [[
 ]]
 
 author = "suqf"
-version = "1.2.4"
+version = "1.3.1"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"

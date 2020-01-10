@@ -37,11 +37,29 @@ end
 AddClassPostConstruct("widgets/controls", function(controls)
     _controls = controls
     LoadPosition()
-    for _,v in ipairs(_G.autotipslist) do
+    for _,v in ipairs(autotipslist) do
         controls[v] = controls.containerroot:AddChild(TipsBadge(v))
         controls[v]:Hide()
     end
 end)
+
+local function timetostring(time)
+    local day = math.floor(time / TUNING.TOTAL_DAY_TIME)
+    time = time - day * TUNING.TOTAL_DAY_TIME
+    local minute = math.floor(time / 60)
+    time = time - minute * 60
+    local second = math.floor(time)
+
+    return string.format("%02d:%02d:%02d", day, minute, second)
+end
+
+local function DisplaySystemMessage(str)
+    player = _G.ThePlayer
+    if player and player.HUD and player.HUD.controls and player.HUD.controls.networkchatqueue 
+        and str and #str > 0 then
+        player.HUD.controls.networkchatqueue:DisplaySystemMessage(str)
+    end
+end
 
 local function tipsui(inst)
     inst:DoPeriodicTask(1, function()        
@@ -53,13 +71,17 @@ local function tipsui(inst)
 
         local x = _position.x
         local y = _position.y
-        for _,v in ipairs(_G.autotipslist) do
-            local time = player.components.tips["net_" .. v]:value()
-            if time > 0 then
+        for _,v in ipairs(autotipslist) do
+            local value = player.components.tips:GetAutoValue(v)
+            local time = nil
+            if value ~= nil then
+                time = value.time
+            end
+            if time ~= nil and time > 0 then
                 y = y - 30
                 _controls[v]:SetPosition(x, y)
                 _controls[v]:Show()
-                _controls[v].num:SetString(_G.timetostring(time))
+                _controls[v].num:SetString(timetostring(time))
             else
                 _controls[v]:Hide()
             end
@@ -77,9 +99,13 @@ local function tipstext(inst)
         local str = ""
 
         for _,v in ipairs(_G.autotipslist) do
-            local time = player.components.tips["net_" .. v]:value()
-            if time > 0 then
-                str = str .. v .. " " .. _G.timetostring(time) .. "\n"
+            local value = player.components.tips:GetAutoValue(v)
+            local time = nil
+            if value ~= nil then
+                time = value.time
+            end
+            if time ~= nil and time > 0 then
+                str = str .. v .. " " .. timetostring(time) .. "\n"
             end
         end
 
@@ -89,11 +115,37 @@ local function tipstext(inst)
 
         if tips_method == 2 and player.components.talker then
             player.components.talker:Say(str)
-        elseif tips_method == 3 and player.HUD and player.HUD.controls and player.HUD.controls.networkchatqueue then
-            player.HUD.controls.networkchatqueue:DisplaySystemMessage(str)
+        elseif tips_method == 3 then
+            DisplaySystemMessage(str)
         end
     end)
 end
+
+local localfnlist = 
+{
+    sx = function(params, caller)
+        local n = tonumber(params.num)
+        if n == nil then
+            return
+        end
+        _position.x = n
+        SavePosition()
+    end,
+
+    sy = function(params, caller)
+        local n = tonumber(params.num)
+        if n == nil then
+            return
+        end
+        _position.y = n
+        SavePosition()
+    end,
+
+    pt = function(params, caller)
+        local pt = caller:GetPosition()
+        DisplaySystemMessage(pt:__tostring())
+    end
+}
 
 AddPrefabPostInit("world", function (inst)
     if tips_method == 1 then
@@ -102,11 +154,14 @@ AddPrefabPostInit("world", function (inst)
         tipstext(inst)
     end
 
-    local desc = "sx sy"
-    for k,v in pairs(_G.tips_index) do
+    local desc = ""
+    for k,v in pairs(tips_index) do
         if #k == 2 then
             desc = desc .. " " .. k
         end
+    end
+    for k,v in pairs(localfnlist) do
+        desc = desc .. " " .. k
     end
     AddUserCommand("tips", {
         aliases = {"t"},
@@ -122,21 +177,39 @@ AddPrefabPostInit("world", function (inst)
         localfn = function(params, caller)
             local what = params.what
 
-            if what == "sx" or what == "sy" then
-                local n = tonumber(params.num)
-                if n == nil then
-                    return
-                end
-
-                _position.x = what == "sx" and n or _position.x
-                _position.y = what == "sy" and n or _position.y
-                SavePosition()
+            local localfn = localfnlist[what]
+            if localfn ~= nil then
+                localfn(params, caller)
                 return
             end
 
-            if caller.components.tips then
-                caller.components.tips:GetTime(what)
-            end
+            SendRPC(what)
         end
     })
+end)
+
+AddPlayerPostInit(function(player)
+    player:DoTaskInTime(1, function()
+        if player.components.tips == nil then
+            return
+        end
+        player.components.tips:SetReceiveFn(function(inst, json)
+            print(_G.json.encode(json))
+            local manuallist = json.manuallist
+            local str = ""
+            for k,v in pairs(manuallist) do
+                if v.time and v.time > 0 then
+                    str = string.format("%s\n%s %s", str, k, timetostring(v.time))
+                end
+                if v.pt then
+                    local pt = v.pt 
+                    if type(pt) == "table" then
+                        pt = _G.json.encode(pt)
+                    end
+                    str = string.format("%s\n%s %s", str, k, pt)
+                end
+            end
+            DisplaySystemMessage(str)
+        end)
+    end)
 end)

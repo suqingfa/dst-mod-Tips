@@ -16,19 +16,21 @@ if SERVER then
     modimport("server")
 end
 
-_G.timetostring = function (time)
-    local day = math.floor(time / TUNING.TOTAL_DAY_TIME)
-    time = time - day * TUNING.TOTAL_DAY_TIME
-    local minute = math.floor(time / 60)
-    time = time - minute * 60
-    local second = math.floor(time)
-
-    return string.format("%02d:%02d:%02d", day, minute, second)
-end
-
 local function findentity(prefabname)
     for k,v in pairs(_G.Ents) do
         if v.prefab == prefabname then
+            return v
+        end
+    end
+end
+
+local function getupvalue(fn, name)
+    for i=1,100 do
+        local k, v = _G.debug.getupvalue(fn, i)
+        if k == nil then
+            return
+        end
+        if k == name then
             return v
         end
     end
@@ -42,7 +44,9 @@ local function gettimespawner(t)
         return
     end
 
-    return data and data[t.timetowhat]
+    local time = data and data[t.timetowhat]
+    time = time and math.floor(time)
+    return time or nil
 end
 
 local function gettimeleft(t)
@@ -62,7 +66,20 @@ local function gettimeleft(t)
         end
     end
 
-    return t.adjusttimefn and t.adjusttimefn(time, timer) or time
+    local time = t.adjusttimefn and t.adjusttimefn(time, timer) or time
+    time = time and math.floor(time)
+    return time or nil
+end
+
+local function getdefaultposition(t, time)
+    if time and time > 0 then
+        return
+    end
+
+    local ent = _G.c_findnext(t.prefab or t.name)
+    if ent ~= nil then
+        return ent:GetPosition():__tostring()
+    end
 end
 
 local tips_list = {
@@ -70,6 +87,7 @@ local tips_list = {
         name = "hound",
         aliases = {"hd", "wm", "worm"},
         gettimefn = gettimespawner, 
+        getptfn = function() end,
         spawner = "hounded",
         timetowhat = "timetoattack",
     },
@@ -78,6 +96,7 @@ local tips_list = {
         name = "deerclops",
         aliases = {"dc"},
         gettimefn = gettimespawner, 
+        getptfn = getdefaultposition,
         spawner = "deerclopsspawner",
         timetowhat = "timetoattack",
         conditionfn = function(data)
@@ -100,6 +119,7 @@ local tips_list = {
         name = "bearger",
         aliases = {"bg"},
         gettimefn = gettimespawner, 
+        getptfn = getdefaultposition, 
         spawner = "beargerspawner",
         timetowhat = "timetospawn",
         conditionfn = function(data)
@@ -114,6 +134,7 @@ local tips_list = {
         name = "klaus_sack",
         aliases = {"ks"},
         gettimefn = gettimespawner, 
+        getptfn = getdefaultposition,
         spawner = "klaussackspawner", 
         timetowhat = "timetorespawn",
     },
@@ -124,6 +145,29 @@ local tips_list = {
         gettimefn = gettimespawner, 
         spawner = "malbatrossspawner", 
         timetowhat = "_time_until_spawn",
+        getptfn = function(t, time)
+            if time and time > 0 then
+                return
+            end
+
+            if _G.TheWorld == nil or _G.TheWorld.components.malbatrossspawner == nil then
+                return
+            end
+
+            local fn = _G.TheWorld.components.malbatrossspawner.OnUpdate
+            local _activemalbatross = getupvalue(fn, "_activemalbatross")
+            if _activemalbatross ~= nil then
+                return _activemalbatross:GetPosition():__tostring()
+            end
+            local _shuffled_shoals_for_spawning = getupvalue(fn, "_shuffled_shoals_for_spawning")
+            if _shuffled_shoals_for_spawning ~= nil then
+                local pt = {}
+                for k,v in pairs(_shuffled_shoals_for_spawning) do
+                    table.insert(pt, v:GetPosition():__tostring())
+                end
+                return pt
+            end
+        end
     },
 
     {
@@ -132,6 +176,17 @@ local tips_list = {
         gettimefn = gettimespawner, 
         spawner = "toadstoolspawner", 
         timetowhat = "timetorespawn",
+        getptfn = function(t, time)
+            if time and time > 0 then
+                return
+            end
+            for i=1,3 do
+                local toadstool_cap = _G.c_findnext("toadstool_cap")
+                if toadstool_cap and toadstool_cap:HasToadstool() then
+                    return toadstool_cap:GetPosition():__tostring()
+                end
+            end
+        end
     },
 
 
@@ -139,6 +194,7 @@ local tips_list = {
         name = "antlion",
         aliases = {"al"},
         gettimefn = gettimeleft, 
+        getptfn = getdefaultposition, 
         prefab = "antlion", 
         timer = {"rage"},
     },
@@ -147,6 +203,7 @@ local tips_list = {
         name = "dragonfly",
         aliases = {"df"},
         gettimefn = gettimeleft, 
+        getptfn = getdefaultposition, 
         prefab = "dragonfly_spawner", 
         timer = {"regen_dragonfly"},
     },
@@ -155,6 +212,7 @@ local tips_list = {
         name = "atrium_gate",
         aliases = {"ag"},
         gettimefn = gettimeleft, 
+        getptfn = getdefaultposition,
         prefab = "atrium_gate", 
         timer = {"destabilizing", "cooldown"},
         adjusttimefn = function(time, timer)
@@ -169,6 +227,7 @@ local tips_list = {
         name = "beequeenhive",
         aliases = {"bh"},
         gettimefn = gettimeleft, 
+        getptfn = getdefaultposition,
         prefab = "beequeenhive", 
         timer = {"hivegrowth1", "hivegrowth2", "hivegrowth"},
         adjusttimefn = function(time, timer)
@@ -181,10 +240,8 @@ local tips_list = {
         end
     }
 }
-_G.tips_list = tips_list
 
 tips_index = {}
-_G.tips_index = tips_index
 for i,v in ipairs(tips_list) do
     tips_index[v.name] = i
     for _,alias in ipairs(v.aliases) do
@@ -192,25 +249,29 @@ for i,v in ipairs(tips_list) do
     end
 end
 
+
+AddPlayerPostInit(function(player)
+    player:AddComponent("tips")
+end)
+
+-- auto
 autotipslist = {"hound", "antlion", "bearger", "deerclops"}
-_G.autotipslist = autotipslist
 function AutoTips()
     local times = {}
     for _,v in ipairs(autotipslist) do
         local t = tips_list[tips_index[v]]
-        local time = t.gettimefn(t)
-        if time then
+        local time = t:gettimefn()
+        if time ~= nil and time > 0 then
             times[v] = time
-        else
-            times[v] = 0
         end
     end
 
-    for _,palyer in pairs(_G.AllPlayers) do
-        if palyer.components.tips then
+    for _,player in pairs(_G.AllPlayers) do
+        if player.components.tips then
             for k,v in pairs(times) do
-                palyer.components.tips["net_" .. k]:set(v)
+                player.components.tips:SetAutoValue(k, {time = v})
             end
+            player.components.tips:Send()
         end
     end
 end
@@ -218,10 +279,28 @@ end
 AddPrefabPostInit("world", function(inst)
     if SERVER then
         AutoTips()
-        inst:DoPeriodicTask(GetModConfigData("tick_rate"), AutoTips)
+        inst:DoPeriodicTask(1, AutoTips)
     end
 end)
 
-AddPlayerPostInit(function(inst)
-    inst:AddComponent("tips")
+-- manual
+AddModRPCHandler("Tips", "Time", function(inst, index)
+    local t = tips_list[index]
+    if t == nil then
+        return
+    end
+
+    local time = t:gettimefn()
+    local pt = t:getptfn(time)
+    if inst.components.tips then
+        inst.components.tips:SetManualValue(t.name, {time = time, pt = pt})
+    end
 end)
+
+function SendRPC(what)
+    local index = tips_index[what]
+    if index then
+        print(index)
+        SendModRPCToServer(MOD_RPC.Tips.Time, index)
+    end
+end
