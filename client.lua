@@ -194,7 +194,6 @@ AddPlayerPostInit(function(player)
             return
         end
         player.components.tips:SetReceiveFn(function(inst, json)
-            print(_G.json.encode(json))
             local manuallist = json.manuallist
             local str = ""
             for k,v in pairs(manuallist) do
