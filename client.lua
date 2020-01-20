@@ -98,7 +98,7 @@ local function tipstext(inst)
 
         local str = ""
 
-        for _,v in ipairs(_G.autotipslist) do
+        for _,v in ipairs(autotipslist) do
             local value = player.components.tips:GetAutoValue(v)
             local time = nil
             if value ~= nil then

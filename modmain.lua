@@ -155,15 +155,21 @@ local tips_list = {
             end
 
             local fn = _G.TheWorld.components.malbatrossspawner.OnUpdate
+
             local _activemalbatross = getupvalue(fn, "_activemalbatross")
             if _activemalbatross ~= nil then
                 return _activemalbatross:GetPosition():__tostring()
             end
+
             local _shuffled_shoals_for_spawning = getupvalue(fn, "_shuffled_shoals_for_spawning")
             if _shuffled_shoals_for_spawning ~= nil then
+                local max_shoals_to_test = math.ceil(#_shuffled_shoals_for_spawning * 0.25)
                 local pt = {}
-                for k,v in pairs(_shuffled_shoals_for_spawning) do
+                for i,v in ipairs(_shuffled_shoals_for_spawning) do
                     table.insert(pt, v:GetPosition():__tostring())
+                    if i == max_shoals_to_test then
+                        break
+                    end
                 end
                 return pt
             end
@@ -180,7 +186,7 @@ local tips_list = {
             if time and time > 0 then
                 return
             end
-            for i=1,3 do
+            for i=1,_G.c_countprefabs("toadstool_cap", true) do
                 local toadstool_cap = _G.c_findnext("toadstool_cap")
                 if toadstool_cap and toadstool_cap:HasToadstool() then
                     return toadstool_cap:GetPosition():__tostring()
