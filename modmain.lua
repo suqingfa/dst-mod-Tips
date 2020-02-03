@@ -101,17 +101,14 @@ local tips_list = {
         timetowhat = "timetoattack",
         conditionfn = function(data)
             local deerclops_attackduringoffseason = 
-                _G.TheWorld and 
                 _G.TheWorld.topology and
                 _G.TheWorld.topology.overrides and 
                 _G.TheWorld.topology.overrides.deerclops == "always"
-            local remainingdaysinseason = _G.TheWorld and _G.TheWorld.state and _G.TheWorld.state.remainingdaysinseason
             return _G.TheWorld.state.cycles > TUNING.NO_BOSS_TIME and  
                    (deerclops_attackduringoffseason or 
                     (_G.TheWorld.state.season == "winter" and 
                         data.timetoattack and
-                        remainingdaysinseason and
-                        data.timetoattack < (remainingdaysinseason+1) * TUNING.TOTAL_DAY_TIME))
+                        data.timetoattack < (_G.TheWorld.state.remainingdaysinseason + 1-_G.TheWorld.state.time) * TUNING.TOTAL_DAY_TIME))
         end,
     },
 
