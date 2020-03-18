@@ -1,4 +1,6 @@
 TheSim = _G.TheSim
+SpawnPrefab = _G.SpawnPrefab
+TUNING = _G.TUNING
 tonumber = _G.tonumber
 json = _G.json
 
@@ -188,6 +190,24 @@ AddPrefabPostInit("world", function (inst)
     })
 end)
 
+local function miniflare_minimap(pt)
+    local s, e = pt:find("[%d-.]+")
+    local x = tonumber(pt:sub(s, e))
+
+    s, e = pt:find("[%d-.]+", e + 1)
+    local y = tonumber(pt:sub(s, e))
+
+    s, e = pt:find("[%d-.]+", e + 1)
+    local z = tonumber(pt:sub(s, e))
+
+    local minimap = SpawnPrefab("miniflare_minimap")
+    print("miniflare_minimap: ", pt, x, y, z)
+    minimap.Transform:SetPosition(x, y, z)
+    minimap:DoTaskInTime(TUNING.MINIFLARE.TIME, function()
+        minimap:Remove()
+    end)
+end
+
 AddPlayerPostInit(function(player)
     player:DoTaskInTime(1, function()
         if player.components.tips == nil then
@@ -202,7 +222,12 @@ AddPlayerPostInit(function(player)
                 end
                 if v.pt then
                     local pt = v.pt 
-                    if type(pt) == "table" then
+                    if type(pt) == "string" then
+                        miniflare_minimap(pt)
+                    elseif type(pt) == "table" then
+                        for _,v in ipairs(pt) do
+                            miniflare_minimap(v)
+                        end
                         pt = _G.json.encode(pt)
                     end
                     str = string.format("%s\n%s %s", str, k, pt)
