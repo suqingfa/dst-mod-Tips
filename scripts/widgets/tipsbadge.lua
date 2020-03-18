@@ -7,12 +7,11 @@ local config_list = {
     hound = {
         scale = 0.066,
         build = "hound_ocean",
-        animation = "idle",
         loop = false
     },
 
-    antlion = {
-        animation = "idle",
+    deerclops = {
+        animation = "idle_loop",
         loop = true
     },
 
@@ -22,9 +21,41 @@ local config_list = {
         loop = true
     },
 
-    deerclops = {
+    klaus_sack = {
+        scale = 0.066,
+        bank = "klaus_bag",
+        build = "klaus_bag",
+    },
+
+    malbatross = {
+        scale = 0.02,
         animation = "idle_loop",
-        loop = true
+        loop = true,
+    },
+
+    toadstool = {
+        scale = 0.02,
+        loop = true,
+    },
+
+    antlion = {
+        loop = true,
+    },
+
+    dragonfly = {
+        loop = true,
+    },
+
+    atrium_gate = {
+        scale = 0.03,
+        build = "atrium_gate",
+    },
+
+    beequeenhive = {
+        scale = 0.05,
+        bank = "bee_queen_hive",
+        build = "bee_queen_hive",
+        animation = "large",
     },
 }
 
@@ -34,6 +65,7 @@ for k,v in pairs(config_list) do
     v.y = v.y or -50
     v.bank = v.bank or k
     v.build = v.build or (v.bank .. "_build")
+    v.animation = v.animation or "idle"
 end
 
 local TipsBadge = Class(Widget, function(self, prefab)

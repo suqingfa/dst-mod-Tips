@@ -7,7 +7,7 @@ command:
 ]]
 
 author = "suqf"
-version = "1.3.4"
+version = "1.4.0"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"
@@ -38,20 +38,102 @@ configuration_options =
     },
 
     {
-        name = "tick_rate",
-        label = "tick rate",
-        hover = "The interval at which the server communicates with the guest. The smaller the value, the more accurate the display time, but the network pressure on the server is large.",
+        name = "hound",
+        label = "hound",
         options = {
-                    {description = "1", data = 1},
-                    {description = "2", data = 2},
-                    {description = "3", data = 3},
-                    {description = "4", data = 4},
-                    {description = "5", data = 5},
-                    {description = "10", data = 10},
-                    {description = "20", data = 20},
-                    {description = "30", data = 30},
-                    {description = "60", data = 60},
-                },
-        default = 1,
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "deerclops",
+        label = "deerclops",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "antlion",
+        label = "antlion",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "bearger",
+        label = "bearger",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "klaus_sack",
+        label = "klaus_sack",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "malbatross",
+        label = "malbatross",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "toadstool",
+        label = "toadstool",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "dragonfly",
+        label = "dragonfly",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "atrium_gate",
+        label = "atrium_gate",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "beequeenhive",
+        label = "beequeenhive",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
     },
 }

@@ -258,7 +258,13 @@ AddPlayerPostInit(function(player)
 end)
 
 -- auto
-autotipslist = {"hound", "antlion", "bearger", "deerclops"}
+autotipslist = {}
+for _,v in ipairs(tips_list) do
+    if GetModConfigData(v.name) then
+        table.insert(autotipslist, v.name)
+    end
+end
+
 function AutoTips()
     local times = {}
     for _,v in ipairs(autotipslist) do

@@ -7,7 +7,7 @@ description = [[
 ]]
 
 author = "suqf"
-version = "1.3.4"
+version = "1.4.0"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"
@@ -38,20 +38,102 @@ configuration_options =
     },
 
     {
-        name = "tick_rate",
-        label = "通信时间间隔",
-        hover = "服务器与客机通信的间隔。值越小时，显示的时间越准确，但对服务器的网络压力大",
+        name = "hound",
+        label = "猎狗",
         options = {
-                    {description = "1", data = 1},
-                    {description = "2", data = 2},
-                    {description = "3", data = 3},
-                    {description = "4", data = 4},
-                    {description = "5", data = 5},
-                    {description = "10", data = 10},
-                    {description = "20", data = 20},
-                    {description = "30", data = 30},
-                    {description = "60", data = 60},
-                },
-        default = 1,
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "deerclops",
+        label = "巨鹿",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "antlion",
+        label = "蚁狮",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "bearger",
+        label = "熊獾",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "klaus_sack",
+        label = "克劳斯包",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "malbatross",
+        label = "邪天翁",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "toadstool",
+        label = "蟾蜍",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "dragonfly",
+        label = "龙蝇",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "atrium_gate",
+        label = "远古大门",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "beequeenhive",
+        label = "巨型蜂巢",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
     },
 }
