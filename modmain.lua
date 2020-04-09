@@ -108,7 +108,7 @@ local tips_list = {
                    (deerclops_attackduringoffseason or 
                     (_G.TheWorld.state.season == "winter" and 
                         data.timetoattack and
-                        data.timetoattack < (_G.TheWorld.state.remainingdaysinseason + 1-_G.TheWorld.state.time) * TUNING.TOTAL_DAY_TIME))
+                        data.timetoattack < (_G.TheWorld.state.remainingdaysinseason -_G.TheWorld.state.time) * TUNING.TOTAL_DAY_TIME))
         end,
     },
 
