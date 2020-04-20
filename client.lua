@@ -190,6 +190,11 @@ AddPrefabPostInit("world", function (inst)
     })
 end)
 
+local TargetIndicator = require "widgets/targetindicator"
+function TargetIndicator:GetTargetIndicatorAlpha()
+    return 1
+end
+
 local function miniflare_minimap(pt)
     local s, e = pt:find("[%d-.]+")
     local x = tonumber(pt:sub(s, e))
@@ -201,7 +206,6 @@ local function miniflare_minimap(pt)
     local z = tonumber(pt:sub(s, e))
 
     local minimap = SpawnPrefab("miniflare_minimap")
-    print("miniflare_minimap: ", pt, x, y, z)
     minimap.Transform:SetPosition(x, y, z)
     minimap:DoTaskInTime(TUNING.MINIFLARE.TIME, function()
         minimap:Remove()
