@@ -38,6 +38,12 @@ local config_list = {
         loop = true,
     },
 
+    crabking = {
+        scale = 0.015,
+        bank = "king_crab",
+        build = "crab_king_build",
+    },
+
     antlion = {
         loop = true,
     },

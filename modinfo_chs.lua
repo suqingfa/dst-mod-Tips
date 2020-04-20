@@ -108,6 +108,16 @@ configuration_options =
     },
 
     {
+        name = "crabking",
+        label = "帝王蟹",
+        options = {
+            {description = "开", data = true},
+            {description = "关", data = false},
+        },
+        default = false,
+    },
+
+    {
         name = "dragonfly",
         label = "龙蝇",
         options = {

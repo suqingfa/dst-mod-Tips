@@ -108,6 +108,17 @@ configuration_options =
     },
 
     {
+        name = "crabking",
+        label = "crabking",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+
+    {
         name = "dragonfly",
         label = "dragonfly",
         options = {

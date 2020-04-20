@@ -192,6 +192,14 @@ local tips_list = {
         end
     },
 
+    {
+        name = "crabking",
+        aliases = {"ck"},
+        gettimefn = gettimespawner,
+        getptfn = getdefaultposition,
+        spawner = "crabkingspawner",
+        timetowhat = "timetorespawn",
+    },
 
     {
         name = "antlion",
