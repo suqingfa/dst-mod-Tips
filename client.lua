@@ -221,6 +221,7 @@ AddPlayerPostInit(function(player)
             local manuallist = json.manuallist
             local str = ""
             for k,v in pairs(manuallist) do
+                k = STRINGS.NAMES[string.upper(k)] or k
                 if v.time and v.time > 0 then
                     str = string.format("%s\n%s %s", str, k, timetostring(v.time))
                 end

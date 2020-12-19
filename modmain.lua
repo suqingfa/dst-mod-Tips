@@ -38,7 +38,7 @@ end
 
 local function gettimespawner(t)
     local spawner = _G.TheWorld and _G.TheWorld.components[t.spawner]
-    local data = spawner and spawner:OnSave()
+    local data = spawner and spawner.OnSave and spawner:OnSave()
 
     if data and t.conditionfn and not t.conditionfn(data) then
         return
