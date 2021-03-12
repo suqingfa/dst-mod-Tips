@@ -1,9 +1,3 @@
-TheSim = _G.TheSim
-SpawnPrefab = _G.SpawnPrefab
-TUNING = _G.TUNING
-tonumber = _G.tonumber
-json = _G.json
-
 
 local TipsBadge = require "widgets/tipsbadge"
 
@@ -65,7 +59,7 @@ end
 
 local function tipsui(inst)
     inst:DoPeriodicTask(1, function()        
-        local player = _G.ThePlayer
+        local player = ThePlayer
 
         if player == nil or player.components.tips == nil then
             return
@@ -93,8 +87,8 @@ end
 
 local function tipstext(inst)
     inst:WatchWorldState("cycles", function()
-        local player = _G.ThePlayer
-        if player == nil or _G.ThePlayer.components.tips == nil then
+        local player = ThePlayer
+        if player == nil or ThePlayer.components.tips == nil then
             return
         end
 
@@ -169,7 +163,7 @@ AddPrefabPostInit("world", function (inst)
         aliases = {"t"},
         desc = desc,
         prettyname = nil,
-        permission = _G.COMMAND_PERMISSION.USER,
+        permission = COMMAND_PERMISSION.USER,
         slash = true,
         usermenu = false,
         servermenu = false,

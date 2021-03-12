@@ -1,7 +1,4 @@
-_G = GLOBAL
-TheNet = _G.TheNet
-TUNING = _G.TUNING
-require = _G.require
+modimport "common"
 
 SERVER = TheNet and TheNet:GetIsServer()
 CLINET = TheNet and not TheNet:IsDedicated()
@@ -17,34 +14,38 @@ if SERVER then
 end
 
 local function findentity(prefabname)
-    for k,v in pairs(_G.Ents) do
+    for k,v in pairs(Ents) do
         if v.prefab == prefabname then
             return v
         end
     end
 end
 
-local function getupvalue(fn, name)
-    for i=1,100 do
-        local k, v = _G.debug.getupvalue(fn, i)
-        if k == nil then
-            return
-        end
-        if k == name then
-            return v
-        end
-    end
-end
-
 local function gettimespawner(t)
-    local spawner = _G.TheWorld and _G.TheWorld.components[t.spawner]
+    local spawner = TheWorld and TheWorld.components[t.spawner]
     local data = spawner and spawner.OnSave and spawner:OnSave()
 
-    if data and t.conditionfn and not t.conditionfn(data) then
+    if t.conditionfn and not t.conditionfn(data) then
         return
     end
 
     local time = data and data[t.timetowhat]
+    time = time and math.floor(time)
+    if time then
+        return time
+    end
+
+    local worldsettingstimer = TheWorld.components.worldsettingstimer
+    local ent = c_findnext(t.spawner or t.name)
+    if ent ~= nil and ent.components.worldsettingstimer ~= nil then
+        worldsettingstimer = ent.components.worldsettingstimer
+    end
+
+    if worldsettingstimer == nil or t.timername == nil then
+        return nil
+    end
+
+    time = worldsettingstimer:GetTimeLeft(t.timername)
     time = time and math.floor(time)
     return time or nil
 end
@@ -76,7 +77,7 @@ local function getdefaultposition(t, time)
         return
     end
 
-    local ent = _G.c_findnext(t.prefab or t.name)
+    local ent = c_findnext(t.prefab or t.name)
     if ent ~= nil then
         return ent:GetPosition():__tostring()
     end
@@ -97,18 +98,10 @@ local tips_list = {
         aliases = {"dc"},
         gettimefn = gettimespawner, 
         getptfn = getdefaultposition,
-        spawner = "deerclopsspawner",
-        timetowhat = "timetoattack",
+        timername = "deerclops_timetoattack",
         conditionfn = function(data)
-            local deerclops_attackduringoffseason = 
-                _G.TheWorld.topology and
-                _G.TheWorld.topology.overrides and 
-                _G.TheWorld.topology.overrides.deerclops == "always"
-            return _G.TheWorld.state.cycles > TUNING.NO_BOSS_TIME and  
-                   (deerclops_attackduringoffseason or 
-                    (_G.TheWorld.state.season == "winter" and 
-                        data.timetoattack and
-                        data.timetoattack < (_G.TheWorld.state.remainingdaysinseason -_G.TheWorld.state.time) * TUNING.TOTAL_DAY_TIME))
+            return TheWorld.state.cycles > TUNING.NO_BOSS_TIME and  
+                (TUNING.DEERCLOPS_ATTACKS_OFF_SEASON or TheWorld.state.season == "winter")
         end,
     },
 
@@ -118,12 +111,12 @@ local tips_list = {
         gettimefn = gettimespawner, 
         getptfn = getdefaultposition, 
         spawner = "beargerspawner",
-        timetowhat = "timetospawn",
+        timername = "bearger_timetospawn",
         conditionfn = function(data)
-            return _G.TheWorld.state.isautumn and
-                    _G.TheWorld.state.cycles > TUNING.NO_BOSS_TIME and 
-                    (data.numSpawned < data.targetnum or 
-                    (not data.lastBeargerKillDay or ((_G.TheWorld.state.cycles - data.lastBeargerKillDay) > TUNING.NO_BOSS_TIME)))
+            return TheWorld.state.isautumn and
+                    TheWorld.state.cycles > TUNING.NO_BOSS_TIME and 
+                    data.numSpawned < data.numToSpawn and 
+                    (data.lastKillDay == nil  or TheWorld.state.cycles - data.lastKillDay > TUNING.NO_BOSS_TIME)
         end
     },
 
@@ -132,33 +125,31 @@ local tips_list = {
         aliases = {"ks"},
         gettimefn = gettimespawner, 
         getptfn = getdefaultposition,
-        spawner = "klaussackspawner", 
-        timetowhat = "timetorespawn",
+        timername = "klaussack_spawntimer",
     },
 
     {
         name = "malbatross",
         aliases = {"mt"},
-        gettimefn = gettimespawner, 
-        spawner = "malbatrossspawner", 
-        timetowhat = "_time_until_spawn",
+        gettimefn = gettimespawner,
+        timername = "malbatross_timetospawn",
         getptfn = function(t, time)
             if time and time > 0 then
                 return
             end
 
-            if _G.TheWorld == nil or _G.TheWorld.components.malbatrossspawner == nil then
+            if TheWorld == nil or TheWorld.components.malbatrossspawner == nil then
                 return
             end
 
-            local fn = _G.TheWorld.components.malbatrossspawner.OnUpdate
+            local fn = TheWorld.components.malbatrossspawner.OnUpdate
 
-            local _activemalbatross = getupvalue(fn, "_activemalbatross")
+            local _activemalbatross = GetUpValue(fn, "_activemalbatross")
             if _activemalbatross ~= nil then
                 return _activemalbatross:GetPosition():__tostring()
             end
 
-            local _shuffled_shoals_for_spawning = getupvalue(fn, "_shuffled_shoals_for_spawning")
+            local _shuffled_shoals_for_spawning = GetUpValue(fn, "_shuffled_shoals_for_spawning")
             if _shuffled_shoals_for_spawning ~= nil then
                 local max_shoals_to_test = math.ceil(#_shuffled_shoals_for_spawning * 0.25)
                 local pt = {}
@@ -177,14 +168,13 @@ local tips_list = {
         name = "toadstool",
         aliases = {"tt"},
         gettimefn = gettimespawner, 
-        spawner = "toadstoolspawner", 
-        timetowhat = "timetorespawn",
+        timername = "toadstool_respawntask",
         getptfn = function(t, time)
             if time and time > 0 then
                 return
             end
-            for i=1,_G.c_countprefabs("toadstool_cap", true) do
-                local toadstool_cap = _G.c_findnext("toadstool_cap")
+            for i=1,c_countprefabs("toadstool_cap", true) do
+                local toadstool_cap = c_findnext("toadstool_cap")
                 if toadstool_cap and toadstool_cap:HasToadstool() then
                     return toadstool_cap:GetPosition():__tostring()
                 end
@@ -197,26 +187,29 @@ local tips_list = {
         aliases = {"ck"},
         gettimefn = gettimespawner,
         getptfn = getdefaultposition,
-        spawner = "crabkingspawner",
-        timetowhat = "timetorespawn",
+        prefab = "crabking",
+        spawner = "crabking_spawner",
+        timername = "regen_crabking",
     },
 
     {
         name = "antlion",
         aliases = {"al"},
-        gettimefn = gettimeleft, 
+        gettimefn = gettimespawner, 
         getptfn = getdefaultposition, 
-        prefab = "antlion", 
-        timer = {"rage"},
+        prefab = "antlion",
+        spawner = "antlion",
+        timername = "rage",
     },
 
     {
         name = "dragonfly",
         aliases = {"df"},
-        gettimefn = gettimeleft, 
+        gettimefn = gettimespawner, 
         getptfn = getdefaultposition, 
-        prefab = "dragonfly_spawner", 
-        timer = {"regen_dragonfly"},
+        prefab = "dragonfly_spawner",
+        spawner = "dragonfly_spawner",
+        timername = "regen_dragonfly",
     },
 
     {
@@ -238,7 +231,7 @@ local tips_list = {
         name = "beequeenhive",
         aliases = {"bh"},
         gettimefn = gettimeleft, 
-        getptfn = getdefaultposition,
+        getptfn = gettimespawner,
         prefab = "beequeenhive", 
         timer = {"hivegrowth1", "hivegrowth2", "hivegrowth"},
         adjusttimefn = function(time, timer)
@@ -283,7 +276,7 @@ function AutoTips()
         end
     end
 
-    for _,player in pairs(_G.AllPlayers) do
+    for _,player in pairs(AllPlayers) do
         if player.components.tips then
             for k,v in pairs(times) do
                 player.components.tips:SetAutoValue(k, {time = v})
