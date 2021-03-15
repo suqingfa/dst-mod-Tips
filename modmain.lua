@@ -36,7 +36,7 @@ local function gettimespawner(t)
     end
 
     local worldsettingstimer = TheWorld.components.worldsettingstimer
-    local ent = c_findnext(t.spawner or t.name)
+    local ent = findentity(t.spawner or t.name)
     if ent ~= nil and ent.components.worldsettingstimer ~= nil then
         worldsettingstimer = ent.components.worldsettingstimer
     end
