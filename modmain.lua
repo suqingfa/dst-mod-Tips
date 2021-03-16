@@ -22,7 +22,7 @@ local function findentity(prefabname)
 end
 
 local function gettimespawner(t)
-    local spawner = TheWorld and TheWorld.components[t.spawner]
+    local spawner = TheWorld and t.spawner and TheWorld.components[t.spawner]
     local data = spawner and spawner.OnSave and spawner:OnSave()
 
     if t.conditionfn and not t.conditionfn(data) then
