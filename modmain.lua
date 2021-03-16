@@ -215,23 +215,37 @@ local tips_list = {
     {
         name = "atrium_gate",
         aliases = {"ag"},
-        gettimefn = gettimeleft, 
         getptfn = getdefaultposition,
         prefab = "atrium_gate", 
-        timer = {"destabilizing", "cooldown"},
-        adjusttimefn = function(time, timer)
-            if timer == "destabilizing" then
-                return time + TUNING.ATRIUM_GATE_COOLDOWN
+        gettimefn = function()
+            local atrium_gate = findentity("atrium_gate")
+            if atrium_gate == nil then
+                return nil
             end
-            return time
-        end
+
+            local worldsettingstimer = atrium_gate.components.worldsettingstimer
+            if worldsettingstimer == nil then
+                return nil
+            end
+
+            local time = 0
+            if worldsettingstimer:ActiveTimerExists("destabilizedelay") then
+                time = worldsettingstimer:GetTimeLeft("destabilizedelay") + TUNING.ATRIUM_GATE_COOLDOWN + TUNING.ATRIUM_GATE_DESTABILIZE_DELAY
+            elseif worldsettingstimer:ActiveTimerExists("destabilizing") then
+                time = worldsettingstimer:GetTimeLeft("destabilizing") + TUNING.ATRIUM_GATE_COOLDOWN
+            elseif worldsettingstimer:ActiveTimerExists("cooldown") then
+                time = worldsettingstimer:GetTimeLeft("cooldown")
+            end
+
+            return math.floor(time)
+        end,
     },
 
     {
         name = "beequeenhive",
         aliases = {"bh"},
         gettimefn = gettimeleft, 
-        getptfn = gettimespawner,
+        getptfn = getdefaultposition,
         prefab = "beequeenhive", 
         timer = {"hivegrowth1", "hivegrowth2", "hivegrowth"},
         adjusttimefn = function(time, timer)
