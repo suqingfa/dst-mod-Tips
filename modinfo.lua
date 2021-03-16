@@ -7,7 +7,7 @@ command:
 ]]
 
 author = "suqf"
-version = "1.5.4"
+version = "1.5.5"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"
