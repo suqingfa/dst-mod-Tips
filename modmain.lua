@@ -113,7 +113,7 @@ local tips_list = {
         spawner = "beargerspawner",
         timername = "bearger_timetospawn",
         conditionfn = function(data)
-            return TheWorld.state.isautumn and
+            return data and TheWorld.state.isautumn and
                     TheWorld.state.cycles > TUNING.NO_BOSS_TIME and 
                     data.numSpawned < data.numToSpawn and 
                     (data.lastKillDay == nil  or TheWorld.state.cycles - data.lastKillDay > TUNING.NO_BOSS_TIME)
