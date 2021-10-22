@@ -50,11 +50,7 @@ local function timetostring(time)
 end
 
 local function DisplaySystemMessage(str)
-    player = _G.ThePlayer
-    if player and player.HUD and player.HUD.controls and player.HUD.controls.networkchatqueue 
-        and str and #str > 0 then
-        player.HUD.controls.networkchatqueue:DisplaySystemMessage(str)
-    end
+    Networking_SystemMessage(str)
 end
 
 local function tipsui(inst)
