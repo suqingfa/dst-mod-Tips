@@ -94,6 +94,20 @@ local tips_list = {
     },
 
     {
+        name = "deer",
+        aliases = {"dr"},
+        gettimefn = gettimespawner, 
+        spawner = "deerherdspawner",
+        timetowhat = "_timetospawn",
+        getptfn = function()
+            local herdlocation = TheWorld.components.deerherding.herdlocation
+            if herdlocation ~= nil and herdlocation:Length() ~= 0 then
+                return herdlocation:__tostring()
+            end
+        end,
+    },
+
+    {
         name = "deerclops",
         aliases = {"dc"},
         gettimefn = gettimespawner, 
