@@ -13,12 +13,21 @@ if SERVER then
     modimport("server")
 end
 
+local prefab_caches = {}
+
 local function findentity(prefabname)
-    for k,v in pairs(Ents) do
-        if v.prefab == prefabname then
-            return v
+    if(prefab_caches[prefabname] == nil) then
+        for k,v in pairs(Ents) do
+            if v.prefab == prefabname then
+                prefab_caches[prefabname] = v
+                v:ListenForEvent("onremove", function(inst)
+                    prefab_caches[inst] = nil
+                end)
+            end
         end
     end
+
+    return prefab_caches[prefabname]
 end
 
 local function gettimespawner(t)
