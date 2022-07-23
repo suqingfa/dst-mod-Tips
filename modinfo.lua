@@ -7,7 +7,7 @@ command:
 ]]
 
 author = "suqf"
-version = "1.6.0"
+version = "1.6.1"
 
 icon_atlas = "tips.xml"
 icon = "tips.tex"
@@ -40,6 +40,16 @@ configuration_options =
     {
         name = "hound",
         label = "hound",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = true,
+    },
+
+    {
+        name = "prime_mate",
+        label = "prime_mate",
         options = {
             {description = "ON", data = true},
             {description = "OFF", data = false},

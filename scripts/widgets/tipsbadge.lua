@@ -10,6 +10,14 @@ local config_list = {
         loop = false
     },
 
+    prime_mate = {
+        scale = 0.066,
+        bank = "pigman",
+        build = "monkeymen_build",
+        animation = "idle_loop",
+        loop = true,
+    },
+
     deerclops = {
         animation = "idle_loop",
         loop = true

@@ -96,7 +96,6 @@ local tips_list = {
     {
         name = "hound",
         aliases = {"hd", "wm", "worm"},
-        gettimefn = gettimespawner, 
         getptfn = function() end,
         spawner = "hounded",
         timetowhat = "timetoattack",
@@ -105,7 +104,6 @@ local tips_list = {
     {
         name = "deer",
         aliases = {"dr"},
-        gettimefn = gettimespawner, 
         spawner = "deerherdspawner",
         timetowhat = "_timetospawn",
         getptfn = function()
@@ -117,10 +115,16 @@ local tips_list = {
     },
 
     {
+        name = "prime_mate",
+        aliases = {"pm"},
+        getptfn = function() end,
+        spawner = "piratespawner",
+        timetowhat = "nextpiratechance",
+    },
+
+    {
         name = "deerclops",
-        aliases = {"dc"},
-        gettimefn = gettimespawner, 
-        getptfn = getdefaultposition,
+        aliases = {"dc"}, 
         timername = "deerclops_timetoattack",
         conditionfn = function(data)
             return TheWorld.state.cycles > TUNING.NO_BOSS_TIME and  
@@ -131,8 +135,6 @@ local tips_list = {
     {
         name = "bearger",
         aliases = {"bg"},
-        gettimefn = gettimespawner, 
-        getptfn = getdefaultposition, 
         spawner = "beargerspawner",
         timername = "bearger_timetospawn",
         conditionfn = function(data)
@@ -146,15 +148,12 @@ local tips_list = {
     {
         name = "klaus_sack",
         aliases = {"ks"},
-        gettimefn = gettimespawner, 
-        getptfn = getdefaultposition,
         timername = "klaussack_spawntimer",
     },
 
     {
         name = "malbatross",
         aliases = {"mt"},
-        gettimefn = gettimespawner,
         timername = "malbatross_timetospawn",
         getptfn = function(t, time)
             if time and time > 0 then
@@ -190,7 +189,6 @@ local tips_list = {
     {
         name = "toadstool",
         aliases = {"tt"},
-        gettimefn = gettimespawner, 
         timername = "toadstool_respawntask",
         getptfn = function(t, time)
             if time and time > 0 then
@@ -208,8 +206,6 @@ local tips_list = {
     {
         name = "crabking",
         aliases = {"ck"},
-        gettimefn = gettimespawner,
-        getptfn = getdefaultposition,
         prefab = "crabking",
         spawner = "crabking_spawner",
         timername = "regen_crabking",
@@ -218,8 +214,6 @@ local tips_list = {
     {
         name = "antlion",
         aliases = {"al"},
-        gettimefn = gettimespawner, 
-        getptfn = getdefaultposition, 
         prefab = "antlion",
         spawner = "antlion",
         timername = "rage",
@@ -228,8 +222,6 @@ local tips_list = {
     {
         name = "dragonfly",
         aliases = {"df"},
-        gettimefn = gettimespawner, 
-        getptfn = getdefaultposition, 
         prefab = "dragonfly_spawner",
         spawner = "dragonfly_spawner",
         timername = "regen_dragonfly",
@@ -238,7 +230,6 @@ local tips_list = {
     {
         name = "atrium_gate",
         aliases = {"ag"},
-        getptfn = getdefaultposition,
         prefab = "atrium_gate", 
         gettimefn = function()
             local atrium_gate = findentity("atrium_gate")
@@ -267,8 +258,7 @@ local tips_list = {
     {
         name = "beequeenhive",
         aliases = {"bh"},
-        gettimefn = gettimeleft, 
-        getptfn = getdefaultposition,
+        gettimefn = gettimeleft,
         prefab = "beequeenhive", 
         timer = {"hivegrowth1", "hivegrowth2", "hivegrowth"},
         adjusttimefn = function(time, timer)
@@ -281,6 +271,15 @@ local tips_list = {
         end
     }
 }
+
+for i,v in ipairs(tips_list) do
+    if v.gettimefn == nil then
+        v.gettimefn = gettimespawner
+    end
+    if v.getptfn == nil then
+        v.getptfn = getdefaultposition
+    end
+end
 
 tips_index = {}
 for i,v in ipairs(tips_list) do
