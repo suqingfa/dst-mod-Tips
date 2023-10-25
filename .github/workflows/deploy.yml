@@ -1,0 +1,40 @@
+name: DST mod push
+
+on:
+  push:
+    tags:
+      - *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: steamcmd/steamcmd
+      env:
+        STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+        STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: change modinfo.lua version
+        run: sed -i 's/version = "0.0.0"/version = "${{ github.ref_name }}"/' mod/modinfo.lua
+
+      - name: write workshop.vdf
+        run: |
+          tee workshop.vdf <<-EOF
+          "workshopitem"
+          {
+            "appid"            "322330"
+            "publishedfileid"  "1898292532"
+            "contentfolder"    "mod"
+            "changenote"       "${{ github.ref_name }}"
+          }
+          EOF
+
+      - name: push mod
+        run: |
+          steamcmd \
+          +login $STEAM_USERNAME $STEAM_PASSWORD \
+          +workshop_build_item workshop.vdf \
+          +quit
