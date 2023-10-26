@@ -6,6 +6,10 @@ CLINET = TheNet and not TheNet:IsDedicated()
 AddModRPCHandler("Tips", "T", function()
 end)
 
+if CLINET then
+    modimport("client")
+end
+
 local entities = {}
 
 AddPrefabPostInitAny(function(inst)
