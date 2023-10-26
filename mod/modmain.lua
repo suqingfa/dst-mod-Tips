@@ -1,12 +1,12 @@
 modimport "common"
 
+SERVER = TheNet and TheNet:GetIsServer()
 CLINET = TheNet and not TheNet:IsDedicated()
 
-AddModRPCHandler("Tips", "T", function()end)
+AddModRPCHandler("Tips", "T", function()
+end)
 
-if CLINET then 
-    modimport("client")
-end
+local entities = {}
 
 AddPrefabPostInitAny(function(inst)
     entities[inst.prefab] = inst
@@ -58,9 +58,9 @@ local function gettimeleft(t)
 
     local time
     local timer
-    for _,v in ipairs(t.timer) do
+    for _, v in ipairs(t.timer) do
         time = prefab.components.timer:TimerExists(v) and
-               prefab.components.timer:GetTimeLeft(v)
+                prefab.components.timer:GetTimeLeft(v)
         if time then
             timer = v
             break
@@ -86,15 +86,16 @@ end
 local tips_list = {
     {
         name = "hound",
-        aliases = {"hd", "wm", "worm"},
-        getptfn = function() end,
+        aliases = { "hd", "wm", "worm" },
+        getptfn = function()
+        end,
         spawner = "hounded",
         timetowhat = "timetoattack",
     },
 
     {
         name = "deer",
-        aliases = {"dr"},
+        aliases = { "dr" },
         spawner = "deerherdspawner",
         timetowhat = "_timetospawn",
         getptfn = function()
@@ -107,44 +108,45 @@ local tips_list = {
 
     {
         name = "prime_mate",
-        aliases = {"pm"},
-        getptfn = function() end,
+        aliases = { "pm" },
+        getptfn = function()
+        end,
         spawner = "piratespawner",
         timetowhat = "nextpiratechance",
     },
 
     {
         name = "deerclops",
-        aliases = {"dc"}, 
+        aliases = { "dc" },
         timername = "deerclops_timetoattack",
         conditionfn = function(data)
-            return TheWorld.state.cycles > TUNING.NO_BOSS_TIME and  
-                (TUNING.DEERCLOPS_ATTACKS_OFF_SEASON or TheWorld.state.season == "winter")
+            return TheWorld.state.cycles > TUNING.NO_BOSS_TIME and
+                    (TUNING.DEERCLOPS_ATTACKS_OFF_SEASON or TheWorld.state.season == "winter")
         end,
     },
 
     {
         name = "bearger",
-        aliases = {"bg"},
+        aliases = { "bg" },
         spawner = "beargerspawner",
         timername = "bearger_timetospawn",
         conditionfn = function(data)
             return data and TheWorld.state.isautumn and
-                    TheWorld.state.cycles > TUNING.NO_BOSS_TIME and 
-                    data.numSpawned < data.numToSpawn and 
-                    (data.lastKillDay == nil  or TheWorld.state.cycles - data.lastKillDay > TUNING.NO_BOSS_TIME)
+                    TheWorld.state.cycles > TUNING.NO_BOSS_TIME and
+                    data.numSpawned < data.numToSpawn and
+                    (data.lastKillDay == nil or TheWorld.state.cycles - data.lastKillDay > TUNING.NO_BOSS_TIME)
         end
     },
 
     {
         name = "klaus_sack",
-        aliases = {"ks"},
+        aliases = { "ks" },
         timername = "klaussack_spawntimer",
     },
 
     {
         name = "malbatross",
-        aliases = {"mt"},
+        aliases = { "mt" },
         timername = "malbatross_timetospawn",
         getptfn = function(t, time)
             if time and time > 0 then
@@ -166,7 +168,7 @@ local tips_list = {
             if _shuffled_shoals_for_spawning ~= nil then
                 local max_shoals_to_test = math.ceil(#_shuffled_shoals_for_spawning * 0.25)
                 local pt = {}
-                for i,v in ipairs(_shuffled_shoals_for_spawning) do
+                for i, v in ipairs(_shuffled_shoals_for_spawning) do
                     table.insert(pt, v:GetPosition():__tostring())
                     if i == max_shoals_to_test then
                         break
@@ -179,13 +181,13 @@ local tips_list = {
 
     {
         name = "toadstool",
-        aliases = {"tt"},
+        aliases = { "tt" },
         timername = "toadstool_respawntask",
         getptfn = function(t, time)
             if time and time > 0 then
                 return
             end
-            for i=1,c_countprefabs("toadstool_cap", true) do
+            for i = 1, c_countprefabs("toadstool_cap", true) do
                 local toadstool_cap = c_findnext("toadstool_cap")
                 if toadstool_cap and toadstool_cap:HasToadstool() then
                     return toadstool_cap:GetPosition():__tostring()
@@ -196,7 +198,7 @@ local tips_list = {
 
     {
         name = "crabking",
-        aliases = {"ck"},
+        aliases = { "ck" },
         prefab = "crabking",
         spawner = "crabking_spawner",
         timername = "regen_crabking",
@@ -204,7 +206,7 @@ local tips_list = {
 
     {
         name = "antlion",
-        aliases = {"al"},
+        aliases = { "al" },
         prefab = "antlion",
         spawner = "antlion",
         timername = "rage",
@@ -212,7 +214,7 @@ local tips_list = {
 
     {
         name = "dragonfly",
-        aliases = {"df"},
+        aliases = { "df" },
         prefab = "dragonfly_spawner",
         spawner = "dragonfly_spawner",
         timername = "regen_dragonfly",
@@ -220,8 +222,8 @@ local tips_list = {
 
     {
         name = "atrium_gate",
-        aliases = {"ag"},
-        prefab = "atrium_gate", 
+        aliases = { "ag" },
+        prefab = "atrium_gate",
         gettimefn = function()
             local atrium_gate = findentity("atrium_gate")
             if atrium_gate == nil then
@@ -248,10 +250,10 @@ local tips_list = {
 
     {
         name = "beequeenhive",
-        aliases = {"bh"},
+        aliases = { "bh" },
         gettimefn = gettimeleft,
-        prefab = "beequeenhive", 
-        timer = {"hivegrowth1", "hivegrowth2", "hivegrowth"},
+        prefab = "beequeenhive",
+        timer = { "hivegrowth1", "hivegrowth2", "hivegrowth" },
         adjusttimefn = function(time, timer)
             if timer == "hivegrowth1" then
                 return time + TUNING.BEEQUEEN_RESPAWN_TIME * 2 / 3
@@ -263,7 +265,7 @@ local tips_list = {
     }
 }
 
-for i,v in ipairs(tips_list) do
+for i, v in ipairs(tips_list) do
     if v.gettimefn == nil then
         v.gettimefn = gettimespawner
     end
@@ -273,13 +275,12 @@ for i,v in ipairs(tips_list) do
 end
 
 tips_index = {}
-for i,v in ipairs(tips_list) do
+for i, v in ipairs(tips_list) do
     tips_index[v.name] = i
-    for _,alias in ipairs(v.aliases) do
+    for _, alias in ipairs(v.aliases) do
         tips_index[alias] = i
     end
 end
-
 
 AddPlayerPostInit(function(player)
     player:AddComponent("tips")
@@ -287,7 +288,7 @@ end)
 
 -- auto
 autotipslist = {}
-for _,v in ipairs(tips_list) do
+for _, v in ipairs(tips_list) do
     if GetModConfigData(v.name) then
         table.insert(autotipslist, v.name)
     end
@@ -295,7 +296,7 @@ end
 
 function AutoTips()
     local times = {}
-    for _,v in ipairs(autotipslist) do
+    for _, v in ipairs(autotipslist) do
         local t = tips_list[tips_index[v]]
         local time = t:gettimefn()
         if time ~= nil and time > 0 then
@@ -303,10 +304,10 @@ function AutoTips()
         end
     end
 
-    for _,player in pairs(AllPlayers) do
+    for _, player in pairs(AllPlayers) do
         if player.components.tips then
-            for k,v in pairs(times) do
-                player.components.tips:SetAutoValue(k, {time = v})
+            for k, v in pairs(times) do
+                player.components.tips:SetAutoValue(k, { time = v })
             end
             player.components.tips:Send()
         end
@@ -330,7 +331,7 @@ AddModRPCHandler("Tips", "Time", function(inst, index)
     local time = t:gettimefn()
     local pt = t:getptfn(time)
     if inst.components.tips then
-        inst.components.tips:SetManualValue(t.name, {time = time, pt = pt})
+        inst.components.tips:SetManualValue(t.name, { time = time, pt = pt })
     end
 end)
 
