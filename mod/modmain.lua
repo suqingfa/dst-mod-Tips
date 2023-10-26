@@ -1,6 +1,5 @@
 modimport "common"
 
-SERVER = TheNet and TheNet:GetIsServer()
 CLINET = TheNet and not TheNet:IsDedicated()
 
 AddModRPCHandler("Tips", "T", function()end)
@@ -9,25 +8,17 @@ if CLINET then
     modimport("client")
 end
 
-if SERVER then 
-    modimport("server")
-end
-
-local prefab_caches = {}
+AddPrefabPostInitAny(function(inst)
+    entities[inst.prefab] = inst
+    inst:ListenForEvent("onremove", function()
+        if entities[inst.prefab] == inst then
+            entities[inst.prefab] = nil
+        end
+    end)
+end)
 
 local function findentity(prefabname)
-    if(prefab_caches[prefabname] == nil) then
-        for k,v in pairs(Ents) do
-            if v.prefab == prefabname then
-                prefab_caches[prefabname] = v
-                v:ListenForEvent("onremove", function(inst)
-                    prefab_caches[inst] = nil
-                end)
-            end
-        end
-    end
-
-    return prefab_caches[prefabname]
+    return entities[prefabname]
 end
 
 local function gettimespawner(t)

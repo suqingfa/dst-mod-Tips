@@ -50,6 +50,10 @@ local function timetostring(time)
 end
 
 local function DisplaySystemMessage(str)
+    if #str == 0 then
+        return
+    end
+
     Networking_SystemMessage(str)
 end
 
