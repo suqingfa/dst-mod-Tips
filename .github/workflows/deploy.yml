@@ -37,5 +37,5 @@ jobs:
         run: |
           steamcmd \
           +login $STEAM_USERNAME $STEAM_PASSWORD $STEAM_AUTH_CODE \
-          +workshop_build_item workshop.vdf \
+          +workshop_build_item $PWD/workshop.vdf \
           +quit
