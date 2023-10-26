@@ -13,6 +13,7 @@ jobs:
       env:
         STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
         STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
+        STEAM_AUTH_CODE: ${{ secrets.STEAM_AUTH_CODE }}
 
     steps:
       - uses: actions/checkout@v3
@@ -35,6 +36,6 @@ jobs:
       - name: push mod
         run: |
           steamcmd \
-          +login $STEAM_USERNAME $STEAM_PASSWORD \
+          +login $STEAM_USERNAME $STEAM_PASSWORD $STEAM_AUTH_CODE \
           +workshop_build_item workshop.vdf \
           +quit
