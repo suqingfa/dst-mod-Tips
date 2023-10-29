@@ -71,6 +71,14 @@ local config_list = {
         build = "bee_queen_hive",
         animation = "large",
     },
+
+    lunarrift_portal = {
+        scale = 0.05,
+        bank = "lunar_rift_portal",
+        build = "lunar_rift_portal",
+        animation = "stage_1_loop",
+        loop = true,
+    },
 }
 
 for k,v in pairs(config_list) do

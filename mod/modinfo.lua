@@ -157,4 +157,14 @@ configuration_options =
         },
         default = false,
     },
+
+    {
+        name = "lunarrift_portal",
+        label = "lunarrift_portal",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = true,
+    },
 }

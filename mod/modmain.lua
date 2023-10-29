@@ -266,7 +266,14 @@ local tips_list = {
             end
             return time
         end
-    }
+    },
+
+    {
+        name = "lunarrift_portal",
+        aliases = {"lp"},
+        prefab = "lunarrift_portal",
+        timername = "rift_spawn_timer"
+    },
 }
 
 for i, v in ipairs(tips_list) do
