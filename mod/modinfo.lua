@@ -167,4 +167,24 @@ configuration_options =
         },
         default = true,
     },
+
+    {
+        name = "daywalker",
+        label = "daywalker",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
+
+    {
+        name = "daywalker2",
+        label = "daywalker2",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
 }

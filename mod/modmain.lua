@@ -274,6 +274,48 @@ local tips_list = {
         prefab = "lunarrift_portal",
         timername = "rift_spawn_timer"
     },
+
+    {
+        name = "daywalker",
+        aliases = {"dw"},
+        prefab = "daywalker",
+        gettimefn = function()
+            local shard_daywalkerspawner = TheWorld and TheWorld.shard and TheWorld.shard.components.shard_daywalkerspawner
+            if shard_daywalkerspawner == nil or shard_daywalkerspawner:GetLocationName() ~= "cavejail" then
+                return
+            end
+
+            local spawner = TheWorld.components.daywalkerspawner
+            if spawner == nil or spawner.days_to_spawn == 0 or spawner.daywalker ~= nil then
+                return
+            end
+
+            local time = TheWorld.components.worldstate.data.time
+
+            return (spawner.days_to_spawn - time) * TUNING.TOTAL_DAY_TIME
+        end
+    },
+
+    {
+        name = "daywalker2",
+        aliases = {"dw2"},
+        prefab = "daywalker2",
+        gettimefn = function()
+            local shard_daywalkerspawner = TheWorld and TheWorld.shard and TheWorld.shard.components.shard_daywalkerspawner
+            if shard_daywalkerspawner == nil or shard_daywalkerspawner:GetLocationName() ~= "cavejail" then
+                return
+            end
+
+            local spawner = TheWorld.components.forestdaywalkerspawner
+            if spawner == nil or spawner.days_to_spawn == 0 or spawner.daywalker ~= nil then
+                return
+            end
+
+            local time = TheWorld.components.worldstate.data.time
+
+            return (spawner.days_to_spawn - time) * TUNING.TOTAL_DAY_TIME
+        end
+    },
 }
 
 for i, v in ipairs(tips_list) do

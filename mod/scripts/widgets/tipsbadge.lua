@@ -79,6 +79,16 @@ local config_list = {
         animation = "stage_1_loop",
         loop = true,
     },
+
+    daywalker = {
+        bank = "daywalker",
+        loop = true,
+    },
+
+    daywalker2 = {
+        bank = "daywalker",
+        loop = true,
+    },
 }
 
 for k,v in pairs(config_list) do
