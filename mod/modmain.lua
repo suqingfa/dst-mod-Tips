@@ -316,6 +316,21 @@ local tips_list = {
             return (spawner.days_to_spawn - time) * TUNING.TOTAL_DAY_TIME
         end
     },
+
+    {
+        name = "wagboss_robot",
+        aliases = {"wr"},
+        prefab = "wagpunk_lever",
+        gettimefn = function()
+            if TheWorld == nil or 
+                TheWorld.components.wagpunk_arena_manager == nil or
+                TheWorld.components.wagpunk_arena_manager.bosscooldowntask == nil then
+                return nil
+            end
+
+            return GetTaskRemaining(TheWorld.components.wagpunk_arena_manager.bosscooldowntask)
+        end
+    },
 }
 
 for i, v in ipairs(tips_list) do

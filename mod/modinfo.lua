@@ -187,4 +187,14 @@ configuration_options =
         },
         default = false,
     },
+
+    {
+        name = "wagboss_robot",
+        label = "wagboss_robot",
+        options = {
+            {description = "ON", data = true},
+            {description = "OFF", data = false},
+        },
+        default = false,
+    },
 }

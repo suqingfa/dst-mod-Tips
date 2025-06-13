@@ -89,6 +89,12 @@ local config_list = {
         bank = "daywalker",
         loop = true,
     },
+
+    wagboss_robot = {
+        scale = 0.02,
+        build = "wagboss_robot",
+        loop = true,
+    }
 }
 
 for k,v in pairs(config_list) do
