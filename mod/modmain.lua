@@ -302,7 +302,7 @@ local tips_list = {
         prefab = "daywalker2",
         gettimefn = function()
             local shard_daywalkerspawner = TheWorld and TheWorld.shard and TheWorld.shard.components.shard_daywalkerspawner
-            if shard_daywalkerspawner == nil or shard_daywalkerspawner:GetLocationName() ~= "cavejail" then
+            if shard_daywalkerspawner == nil or shard_daywalkerspawner:GetLocationName() ~= "forestjunkpile" then
                 return
             end
 
